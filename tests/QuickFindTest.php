@@ -2,34 +2,15 @@
 
 namespace Cancio\Ds\UnionFind\Tests;
 
-use Cancio\Ds\UnionFind\Exception\ElementNotFoundException;
+use Cancio\Ds\UnionFind\Contracts\UnionFindInterface;
 use Cancio\Ds\UnionFind\QuickFind;
-use PHPUnit\Framework\TestCase;
 
-class QuickFindTest extends TestCase
+class QuickFindTest extends AbstractUnionFindTestCase
 {
 
-    public function testGetRootWithMissingElement(): void
+    protected function getUnionFindInstance(array $args = []): UnionFindInterface
     {
-        $quickFind = new QuickFind();
-
-        $quickFind->add('A');
-        $quickFind->add('B');
-
-        $this->expectException(ElementNotFoundException::class);
-
-        $quickFind->getRoot('C');
-    }
-
-    public function testGetRootBeforeUnite(): void
-    {
-        $quickFind = new QuickFind();
-
-        $quickFind->add('A');
-        $quickFind->add('B');
-
-        $this->assertSame('A', $quickFind->getRoot('A'));
-        $this->assertSame('B', $quickFind->getRoot('B'));
+        return new QuickFind($args);
     }
 
     public function testGetRootAfterUnite(): void
@@ -40,86 +21,133 @@ class QuickFindTest extends TestCase
         $quickFind->add('B');
         $quickFind->add('C');
         $quickFind->add('D');
+        $quickFind->add('E');
+        $quickFind->add('F');
+        $quickFind->add('G');
 
-        // Unite A-B
-        $quickFind->unite('A', 'B');
-        $this->assertSame('B', $quickFind->getRoot('A'));
+        $quickFind->unite('C', 'B');
+
+        $this->assertSame('A', $quickFind->getRoot('A'));
         $this->assertSame('B', $quickFind->getRoot('B'));
-        $this->assertSame('C', $quickFind->getRoot('C'));
+        $this->assertSame('B', $quickFind->getRoot('C'));
         $this->assertSame('D', $quickFind->getRoot('D'));
+        $this->assertSame('E', $quickFind->getRoot('E'));
+        $this->assertSame('F', $quickFind->getRoot('F'));
+        $this->assertSame('G', $quickFind->getRoot('G'));
 
-        // Unite C-D
-        $quickFind->unite('C', 'D');
-        $this->assertSame('B', $quickFind->getRoot('A'));
+        $quickFind->unite('D', 'F');
+
+        $this->assertSame('A', $quickFind->getRoot('A'));
         $this->assertSame('B', $quickFind->getRoot('B'));
-        $this->assertSame('D', $quickFind->getRoot('C'));
-        $this->assertSame('D', $quickFind->getRoot('D'));
+        $this->assertSame('B', $quickFind->getRoot('C'));
+        $this->assertSame('F', $quickFind->getRoot('D'));
+        $this->assertSame('E', $quickFind->getRoot('E'));
+        $this->assertSame('F', $quickFind->getRoot('F'));
+        $this->assertSame('G', $quickFind->getRoot('G'));
 
-        // Unite A-C
-        $quickFind->unite('A', 'C');
-        $this->assertSame('D', $quickFind->getRoot('A'));
-        $this->assertSame('D', $quickFind->getRoot('B'));
-        $this->assertSame('D', $quickFind->getRoot('C'));
-        $this->assertSame('D', $quickFind->getRoot('D'));
+        $quickFind->unite('G', 'E');
+
+        $this->assertSame('A', $quickFind->getRoot('A'));
+        $this->assertSame('B', $quickFind->getRoot('B'));
+        $this->assertSame('B', $quickFind->getRoot('C'));
+        $this->assertSame('F', $quickFind->getRoot('D'));
+        $this->assertSame('E', $quickFind->getRoot('E'));
+        $this->assertSame('F', $quickFind->getRoot('F'));
+        $this->assertSame('E', $quickFind->getRoot('G'));
+
+        $quickFind->unite('E', 'F');
+
+        $this->assertSame('A', $quickFind->getRoot('A'));
+        $this->assertSame('B', $quickFind->getRoot('B'));
+        $this->assertSame('B', $quickFind->getRoot('C'));
+        $this->assertSame('F', $quickFind->getRoot('D'));
+        $this->assertSame('F', $quickFind->getRoot('E'));
+        $this->assertSame('F', $quickFind->getRoot('F'));
+        $this->assertSame('F', $quickFind->getRoot('G'));
     }
 
-    public function testRemoveWithMissingElement(): void
-    {
-        $quickFind = new QuickFind();
-
-        $quickFind->add('A');
-        $quickFind->add('B');
-
-        $this->expectException(ElementNotFoundException::class);
-
-        $quickFind->remove('C');
-    }
-
-    public function testRemoveBeforeUnite(): void
-    {
-        $quickFind = new QuickFind();
-
-        $quickFind->add('A');
-        $quickFind->add('B');
-
-        $quickFind->remove('A');
-
-        $this->assertFalse($quickFind->has('A'));
-        $this->assertTrue($quickFind->has('B'));
-    }
-
-    public function testRemoveAAfterUniteAB(): void
+    public function testRemoveRootAfterUnite(): void
     {
         $quickFind = new QuickFind();
 
         $quickFind->add('A');
         $quickFind->add('B');
         $quickFind->add('C');
+        $quickFind->add('D');
+        $quickFind->add('E');
+        $quickFind->add('F');
+        $quickFind->add('G');
 
-        $quickFind->unite('A', 'B');
+        $quickFind->unite('C', 'B');
+        $quickFind->unite('D', 'F');
+        $quickFind->unite('G', 'E');
+        $quickFind->unite('E', 'F');
 
-        $quickFind->remove('A');
+        $quickFind->remove('F');
 
-        $this->assertFalse($quickFind->has('A'));
+        $this->assertTrue($quickFind->has('A'));
         $this->assertTrue($quickFind->has('B'));
         $this->assertTrue($quickFind->has('C'));
+        $this->assertFalse($quickFind->has('D'));
+        $this->assertFalse($quickFind->has('E'));
+        $this->assertFalse($quickFind->has('F'));
+        $this->assertFalse($quickFind->has('G'));
     }
 
-    public function testRemoveBAfterUniteAB(): void
+    public function testRemoveInnerNodeAfterUnite(): void
     {
         $quickFind = new QuickFind();
 
         $quickFind->add('A');
         $quickFind->add('B');
         $quickFind->add('C');
+        $quickFind->add('D');
+        $quickFind->add('E');
+        $quickFind->add('F');
+        $quickFind->add('G');
 
-        $quickFind->unite('A', 'B');
+        $quickFind->unite('C', 'B');
+        $quickFind->unite('D', 'F');
+        $quickFind->unite('G', 'E');
+        $quickFind->unite('E', 'F');
 
-        $quickFind->remove('B');
+        $quickFind->remove('E');
 
-        $this->assertFalse($quickFind->has('A'));
-        $this->assertFalse($quickFind->has('B'));
+        $this->assertTrue($quickFind->has('A'));
+        $this->assertTrue($quickFind->has('B'));
         $this->assertTrue($quickFind->has('C'));
+        $this->assertTrue($quickFind->has('D'));
+        $this->assertFalse($quickFind->has('E'));
+        $this->assertTrue($quickFind->has('F'));
+        $this->assertTrue($quickFind->has('G'));
+    }
+
+    public function testRemoveLeafAfterUnite(): void
+    {
+        $quickFind = new QuickFind();
+
+        $quickFind->add('A');
+        $quickFind->add('B');
+        $quickFind->add('C');
+        $quickFind->add('D');
+        $quickFind->add('E');
+        $quickFind->add('F');
+        $quickFind->add('G');
+
+        $quickFind->unite('C', 'B');
+        $quickFind->unite('D', 'F');
+        $quickFind->unite('G', 'E');
+        $quickFind->unite('E', 'F');
+
+        $quickFind->remove('G');
+
+        $this->assertTrue($quickFind->has('A'));
+        $this->assertTrue($quickFind->has('B'));
+        $this->assertTrue($quickFind->has('C'));
+        $this->assertTrue($quickFind->has('D'));
+        $this->assertTrue($quickFind->has('E'));
+        $this->assertTrue($quickFind->has('F'));
+        $this->assertFalse($quickFind->has('G'));
     }
 
 }
