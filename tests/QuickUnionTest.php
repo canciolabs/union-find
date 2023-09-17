@@ -3,93 +3,17 @@
 namespace Cancio\Ds\UnionFind\Tests;
 
 use Cancio\Ds\UnionFind\Contracts\UnionFindInterface;
-use Cancio\Ds\UnionFind\Exception\ElementNotFoundException;
 use Cancio\Ds\UnionFind\QuickUnion;
 
 class QuickUnionTest extends AbstractUnionFindTestCase
 {
 
     use AncestorsTestTrait;
+    use DescendentsTestTrait;
 
     protected function getUnionFindInstance(array $args = []): UnionFindInterface
     {
         return new QuickUnion($args);
-    }
-
-    public function testGetDescendentsWithMissingElement(): void
-    {
-        $quickUnion = new QuickUnion();
-
-        $quickUnion->add('A');
-        $quickUnion->add('B');
-
-        $this->expectException(ElementNotFoundException::class);
-
-        $quickUnion->getDescendents('C');
-    }
-
-    public function testGetDescendentsBeforeUnite(): void
-    {
-        $quickUnion = new QuickUnion();
-
-        $quickUnion->add('A');
-        $quickUnion->add('B');
-
-        $this->assertSame([], $quickUnion->getDescendents('A'));
-        $this->assertSame([], $quickUnion->getDescendents('B'));
-    }
-
-    public function testGetDescendentsAfterUnite(): void
-    {
-        $quickUnion = new QuickUnion();
-
-        $quickUnion->add('A');
-        $quickUnion->add('B');
-        $quickUnion->add('C');
-        $quickUnion->add('D');
-        $quickUnion->add('E');
-        $quickUnion->add('F');
-        $quickUnion->add('G');
-
-        $quickUnion->unite('C', 'B');
-
-        $this->assertSame([], $quickUnion->getDescendents('A'));
-        $this->assertSame(['C'], $quickUnion->getDescendents('B'));
-        $this->assertSame([], $quickUnion->getDescendents('C'));
-        $this->assertSame([], $quickUnion->getDescendents('D'));
-        $this->assertSame([], $quickUnion->getDescendents('E'));
-        $this->assertSame([], $quickUnion->getDescendents('F'));
-        $this->assertSame([], $quickUnion->getDescendents('G'));
-
-        $quickUnion->unite('D', 'F');
-
-        $this->assertSame([], $quickUnion->getDescendents('A'));
-        $this->assertSame(['C'], $quickUnion->getDescendents('B'));
-        $this->assertSame([], $quickUnion->getDescendents('C'));
-        $this->assertSame([], $quickUnion->getDescendents('D'));
-        $this->assertSame([], $quickUnion->getDescendents('E'));
-        $this->assertSame(['D'], $quickUnion->getDescendents('F'));
-        $this->assertSame([], $quickUnion->getDescendents('G'));
-
-        $quickUnion->unite('G', 'E');
-
-        $this->assertSame([], $quickUnion->getDescendents('A'));
-        $this->assertSame(['C'], $quickUnion->getDescendents('B'));
-        $this->assertSame([], $quickUnion->getDescendents('C'));
-        $this->assertSame([], $quickUnion->getDescendents('D'));
-        $this->assertSame(['G'], $quickUnion->getDescendents('E'));
-        $this->assertSame(['D'], $quickUnion->getDescendents('F'));
-        $this->assertSame([], $quickUnion->getDescendents('G'));
-
-        $quickUnion->unite('E', 'F');
-
-        $this->assertSame([], $quickUnion->getDescendents('A'));
-        $this->assertSame(['C'], $quickUnion->getDescendents('B'));
-        $this->assertSame([], $quickUnion->getDescendents('C'));
-        $this->assertSame([], $quickUnion->getDescendents('D'));
-        $this->assertSame(['G'], $quickUnion->getDescendents('E'));
-        $this->assertSame(['D', 'E', 'G'], $quickUnion->getDescendents('F'));
-        $this->assertSame([], $quickUnion->getDescendents('G'));
     }
 
     public function testGetRootAfterUnite(): void
