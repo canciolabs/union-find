@@ -69,7 +69,7 @@ interface UnionFindInterface extends Countable
     public function set(array $items): UnionFindInterface;
 
     /**
-     * Unite two given elements.
+     * Unite two given elements. Root of "q" will be the root of "p".
      * @param string $p
      * @param string $q
      * @return $this
