@@ -1,6 +1,6 @@
 <?php
 
-namespace Cancio\Ds\UnionFind;
+namespace Cancio\Ds\UnionFind\Contracts;
 
 use Countable;
 
