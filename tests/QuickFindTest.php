@@ -2,34 +2,15 @@
 
 namespace Cancio\Ds\UnionFind\Tests;
 
-use Cancio\Ds\UnionFind\Exception\ElementNotFoundException;
+use Cancio\Ds\UnionFind\Contracts\UnionFindInterface;
 use Cancio\Ds\UnionFind\QuickFind;
-use PHPUnit\Framework\TestCase;
 
-class QuickFindTest extends TestCase
+class QuickFindTest extends AbstractUnionFindTestCase
 {
 
-    public function testGetRootWithMissingElement(): void
+    protected function getUnionFindInstance(array $args = []): UnionFindInterface
     {
-        $quickFind = new QuickFind();
-
-        $quickFind->add('A');
-        $quickFind->add('B');
-
-        $this->expectException(ElementNotFoundException::class);
-
-        $quickFind->getRoot('C');
-    }
-
-    public function testGetRootBeforeUnite(): void
-    {
-        $quickFind = new QuickFind();
-
-        $quickFind->add('A');
-        $quickFind->add('B');
-
-        $this->assertSame('A', $quickFind->getRoot('A'));
-        $this->assertSame('B', $quickFind->getRoot('B'));
+        return new QuickFind($args);
     }
 
     public function testGetRootAfterUnite(): void
@@ -61,31 +42,6 @@ class QuickFindTest extends TestCase
         $this->assertSame('D', $quickFind->getRoot('B'));
         $this->assertSame('D', $quickFind->getRoot('C'));
         $this->assertSame('D', $quickFind->getRoot('D'));
-    }
-
-    public function testRemoveWithMissingElement(): void
-    {
-        $quickFind = new QuickFind();
-
-        $quickFind->add('A');
-        $quickFind->add('B');
-
-        $this->expectException(ElementNotFoundException::class);
-
-        $quickFind->remove('C');
-    }
-
-    public function testRemoveBeforeUnite(): void
-    {
-        $quickFind = new QuickFind();
-
-        $quickFind->add('A');
-        $quickFind->add('B');
-
-        $quickFind->remove('A');
-
-        $this->assertFalse($quickFind->has('A'));
-        $this->assertTrue($quickFind->has('B'));
     }
 
     public function testRemoveAAfterUniteAB(): void
