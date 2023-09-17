@@ -2,6 +2,8 @@
 
 namespace Cancio\Ds\UnionFind;
 
+use Cancio\Ds\UnionFind\Contracts\UnionFindInterface;
+
 class QuickFind extends AbstractUnionFind
 {
 

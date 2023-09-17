@@ -2,6 +2,7 @@
 
 namespace Cancio\Ds\UnionFind;
 
+use Cancio\Ds\UnionFind\Contracts\UnionFindInterface;
 use Cancio\Ds\UnionFind\Exception\DuplicateElementException;
 use Cancio\Ds\UnionFind\Exception\ElementNotFoundException;
 
