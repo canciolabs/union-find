@@ -69,40 +69,6 @@ class QuickUnionTest extends AbstractUnionFindTestCase
         $this->assertSame('F', $quickUnion->getRoot('G'));
     }
 
-    public function testRemoveParentAfterUnite(): void
-    {
-        $quickUnion = new QuickUnion();
-
-        $quickUnion->add('A');
-        $quickUnion->add('B');
-        $quickUnion->add('C');
-
-        $quickUnion->unite('A', 'B');
-
-        $quickUnion->remove('B');
-
-        $this->assertFalse($quickUnion->has('A'));
-        $this->assertFalse($quickUnion->has('B'));
-        $this->assertTrue($quickUnion->has('C'));
-    }
-
-    public function testRemoveChildAfterUnite(): void
-    {
-        $quickUnion = new QuickUnion();
-
-        $quickUnion->add('A');
-        $quickUnion->add('B');
-        $quickUnion->add('C');
-
-        $quickUnion->unite('A', 'B');
-
-        $quickUnion->remove('A');
-
-        $this->assertFalse($quickUnion->has('A'));
-        $this->assertTrue($quickUnion->has('B'));
-        $this->assertTrue($quickUnion->has('C'));
-    }
-
     public function testRemoveRootAfterUnite(): void
     {
         $quickUnion = new QuickUnion();

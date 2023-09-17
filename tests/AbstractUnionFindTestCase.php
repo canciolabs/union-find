@@ -34,6 +34,8 @@ abstract class AbstractUnionFindTestCase extends TestCase
         $this->assertSame('B', $unionFind->getRoot('B'));
     }
 
+    abstract public function testGetRootAfterUnite(): void;
+
     public function testRemoveWithMissingElement(): void
     {
         $unionFind = $this->getUnionFindInstance();
@@ -58,5 +60,45 @@ abstract class AbstractUnionFindTestCase extends TestCase
         $this->assertFalse($unionFind->has('A'));
         $this->assertTrue($unionFind->has('B'));
     }
+
+    public function testRemoveParentAfterUnite(): void
+    {
+        $unionFind = $this->getUnionFindInstance();
+
+        $unionFind->add('A');
+        $unionFind->add('B');
+        $unionFind->add('C');
+
+        $unionFind->unite('A', 'B');
+
+        $unionFind->remove('B');
+
+        $this->assertFalse($unionFind->has('A'));
+        $this->assertFalse($unionFind->has('B'));
+        $this->assertTrue($unionFind->has('C'));
+    }
+
+    public function testRemoveChildAfterUnite(): void
+    {
+        $unionFind = $this->getUnionFindInstance();
+
+        $unionFind->add('A');
+        $unionFind->add('B');
+        $unionFind->add('C');
+
+        $unionFind->unite('A', 'B');
+
+        $unionFind->remove('A');
+
+        $this->assertFalse($unionFind->has('A'));
+        $this->assertTrue($unionFind->has('B'));
+        $this->assertTrue($unionFind->has('C'));
+    }
+
+    abstract public function testRemoveRootAfterUnite(): void;
+
+    abstract public function testRemoveInnerNodeAfterUnite(): void;
+
+    abstract public function testRemoveLeafAfterUnite(): void;
 
 }
